@@ -11,10 +11,20 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.7
-      - run: unzip -q ./*.zip
+      - name: Ouvrir le bon zip
+        run: |
+          for z in ./*.zip; do
+            if unzip -l "$z" | grep -q "ci/build-aar.sh"; then
+              unzip -oq "$z"
+            fi
+          done
+          ls MyVpn/ci
       - run: gradle assembleDebug --no-daemon
         working-directory: MyVpn
       - uses: actions/upload-artifact@v4
